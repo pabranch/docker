@@ -19,11 +19,11 @@ docker run -p 8080:8080 -p 50000:50000 jenkins
 
 NOTE: read below the _build executors_ part for the role of the `50000` port mapping.
 
-This will store the workspace in /var/jenkins_home. All Jenkins data lives in there - including plugins and configuration.
+This will store the workspace in /var/lib/jenkins. All Jenkins data lives in there - including plugins and configuration.
 You will probably want to make that a persistent volume (recommended):
 
 ```
-docker run -p 8080:8080 -p 50000:50000 -v /your/home:/var/jenkins_home jenkins
+docker run -p 8080:8080 -p 50000:50000 -v /your/home:/var/lib/jenkins jenkins
 ```
 
 This will store the jenkins data in `/your/home` on the host.
@@ -33,7 +33,7 @@ Ensure that `/your/home` is accessible by the jenkins user in container (jenkins
 You can also use a volume container:
 
 ```
-docker run --name myjenkins -p 8080:8080 -p 50000:50000 -v /var/jenkins_home jenkins
+docker run --name myjenkins -p 8080:8080 -p 50000:50000 -v /var/lib/jenkins jenkins
 ```
 
 Then myjenkins container has the volume (please do read about docker volume handling to find out more).
@@ -45,7 +45,7 @@ If you bind mount in a volume - you can simply back up that directory
 
 This is highly recommended. Treat the jenkins_home directory as you would a database - in Docker you would generally put a database on a volume.
 
-If your volume is inside a container - you can use ```docker cp $ID:/var/jenkins_home``` command to extract the data, or other options to find where the volume data is.
+If your volume is inside a container - you can use ```docker cp $ID:/var/lib/jenkins``` command to extract the data, or other options to find where the volume data is.
 Note that some symlinks on some OSes may be converted to copies (this can confuse jenkins with lastStableBuild links etc)
 
 For more info check Docker docs section on [Managing data in containers](https://docs.docker.com/userguide/dockervolumes/)
@@ -97,7 +97,7 @@ handlers=java.util.logging.ConsoleHandler
 jenkins.level=FINEST
 java.util.logging.ConsoleHandler.level=FINEST
 EOF
-docker run --name myjenkins -p 8080:8080 -p 50000:50000 --env JAVA_OPTS="-Djava.util.logging.config.file=/var/jenkins_home/log.properties" -v `pwd`/data:/var/jenkins_home jenkins
+docker run --name myjenkins -p 8080:8080 -p 50000:50000 --env JAVA_OPTS="-Djava.util.logging.config.file=/var/lib/jenkins/log.properties" -v `pwd`/data:/var/jenkins_home jenkins
 ```
 
 
@@ -212,7 +212,7 @@ which may be inappropriate.
 
 # Upgrading
 
-All the data needed is in the /var/jenkins_home directory - so depending on how you manage that - depends on how you upgrade. Generally - you can copy it out - and then "docker pull" the image again - and you will have the latest LTS - you can then start up with -v pointing to that data (/var/jenkins_home) and everything will be as you left it.
+All the data needed is in the /var/lib/jenkins directory - so depending on how you manage that - depends on how you upgrade. Generally - you can copy it out - and then "docker pull" the image again - and you will have the latest LTS - you can then start up with -v pointing to that data (/var/jenkins_home) and everything will be as you left it.
 
 As always - please ensure that you know how to drive docker - especially volume handling!
 

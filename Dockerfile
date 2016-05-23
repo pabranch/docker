@@ -2,7 +2,7 @@ FROM java:openjdk-8-jdk-alpine
 
 RUN apk add --no-cache git openssh-client curl zip unzip bash ttf-dejavu
 
-ENV JENKINS_HOME /var/jenkins_home
+ENV JENKINS_HOME /var/lib/jenkins
 ENV JENKINS_SLAVE_AGENT_PORT 50000
 
 ARG user=jenkins
@@ -18,7 +18,7 @@ RUN addgroup -g ${gid} ${group} \
 
 # Jenkins home directory is a volume, so configuration and build history 
 # can be persisted and survive image upgrades
-VOLUME /var/jenkins_home
+VOLUME /var/lib/jenkins
 
 # `/usr/share/jenkins/ref/` contains all reference configuration we want 
 # to set on a fresh new installation. Use it to bundle additional plugins 
